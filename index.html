@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArcSync | Decentralized Network Protocol</title>
+    <!-- Font Awesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #080b11;
+            --bg-card: rgba(18, 24, 38, 0.65);
+            --bg-card-hover: rgba(26, 35, 56, 0.85);
+            --accent-primary: #6366f1;
+            --accent-secondary: #06b6d4;
+            --accent-glow: rgba(99, 102, 241, 0.35);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-glass-bright: rgba(99, 102, 241, 0.4);
+            --discord-color: #5865F2;
+            --x-color: #1DA1F2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glow Background */
+        .ambient-glow-1 {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ambient-glow-2 {
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+        }
+
+        /* Header / Navbar */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1.25rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(8, 11, 17, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #fff;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-main);
+        }
+
+        .btn-wallet {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+            border: none;
+            padding: 0.65rem 1.4rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-wallet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 1;
+            padding: 10rem 2rem 5rem 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            color: var(--accent-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-secondary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #94A3B8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.75rem 1.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Live Metrics Section */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            max-width: 1280px;
+            margin: 4rem auto 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .metric-card {
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--border-glass-bright);
+            transform: translateY(-4px);
+        }
+
+        .metric-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-glass-bright);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Terminal Console Section */
+        .console-section {
+            position: relative;
+            z-index: 1;
+            padding: 2rem 2rem 6rem 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .terminal-window {
+            background: #0d1117;
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .terminal-header {
+            background: #161b22;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .terminal-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .terminal-body {
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #8b949e;
+            height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-line {
+            display: flex;
+            gap: 12px;
+        }
+
+        .log-time { color: #484f58; }
+        .log-info { color: #58a6ff; }
+        .log-success { color: #3fb950; }
+
+        /* Social / Creator Profile Card Section */
+        .creator-section {
+            position: relative;
+            z-index: 1;
+            padding: 2rem 2rem 8rem 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .creator-card {
+            padding: 3rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(18, 24, 38, 0.9) 100%);
+            border: 1px solid var(--border-glass-bright);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .creator-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        }
+
+        .creator-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-secondary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .creator-name {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .social-btn.x-btn:hover {
+            background: rgba(29, 161, 242, 0.15);
+            border-color: var(--x-color);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .social-btn.discord-btn:hover {
+            background: rgba(88, 101, 242, 0.15);
+            border-color: var(--discord-color);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .copy-tag {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border-glass);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .credit-highlight {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(18, 24, 38, 0.95);
+            border: 1px solid var(--border-glass-bright);
+            color: #fff;
+            padding: 0.85rem 1.4rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .footer-content { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <!-- Navigation -->
+    <header id="header">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </div>
+                ArcSync
+            </a>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#network">Live Network</a></li>
+                <li><a href="#developer">Developer</a></li>
+            </ul>
+            <button class="btn-wallet" id="connectBtn" onclick="toggleWallet()">
+                <i class="fa-solid fa-wallet"></i>
+                <span id="walletText">Connect Wallet</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="overview">
+        <div class="badge">
+            <span class="badge-dot"></span> ArcSync Mainnet v2.4 Live
+        </div>
+        <h1>Next-Gen High Speed <br><span>Decentralized Protocol</span></h1>
+        <p>Seamlessly synchronize digital state assets with sub-second finality, ultra-low transactional latency, and cryptographically verified privacy layers.</p>
+        <div class="hero-actions">
+            <button class="btn-wallet" onclick="toggleWallet()">Launch App</button>
+            <a href="#features" class="btn-secondary">Explore Documentation</a>
+        </div>
+    </section>
+
+    <!-- Network Metrics -->
+    <section class="metrics-grid">
+        <div class="glass-panel metric-card">
+            <div class="metric-title"><i class="fa-solid fa-bolt"></i> Avg Latency</div>
+            <div class="metric-value" id="tpsVal">1.2 ms</div>
+        </div>
+        <div class="glass-panel metric-card">
+            <div class="metric-title"><i class="fa-solid fa-shield-halved"></i> Total Value Synced</div>
+            <div class="metric-value">$142.8M</div>
+        </div>
+        <div class="glass-panel metric-card">
+            <div class="metric-title"><i class="fa-solid fa-cubes"></i> Active Nodes</div>
+            <div class="metric-value">4,892</div>
+        </div>
+        <div class="glass-panel metric-card">
+            <div class="metric-title"><i class="fa-solid fa-circle-check"></i> System Uptime</div>
+            <div class="metric-value">99.99%</div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Engineered for Scale</h2>
+            <p>Empowering decentralized applications with enterprise-grade synchronization.</p>
+        </div>
+        <div class="features-grid">
+            <div class="glass-panel feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-microchip"></i></div>
+                <h3>Parallel Execution Engine</h3>
+                <p>Processes transaction batches in parallel across multi-threaded execution environments, maximizing raw throughput.</p>
+            </div>
+            <div class="glass-panel feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+                <h3>Zero-Knowledge Proofs</h3>
+                <p>Integrated state proofs safeguard user execution logs without leaking private transactional parameters.</p>
+            </div>
+            <div class="glass-panel feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-network-wired"></i></div>
+                <h3>Cross-Chain Sync</h3>
+                <p>Natively bridge execution states across multiple Layer-1 and Layer-2 blockchains with unified cryptographic consensus.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Terminal Section -->
+    <section class="console-section" id="network">
+        <div class="section-header">
+            <h2>Real-Time Node Terminal</h2>
+            <p>Live stream of block states and sync confirmations</p>
+        </div>
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                </div>
+                <div class="terminal-title">arcsync-node-client v2.4.0 --live</div>
+            </div>
+            <div class="terminal-body" id="terminalLog">
+                <div class="log-line">
+                    <span class="log-time">[00:00:01]</span>
+                    <span class="log-info">INFO</span>
+                    <span>ArcSync Node Service initialized. Establishing peer connections...</span>
+                </div>
+                <div class="log-line">
+                    <span class="log-time">[00:00:02]</span>
+                    <span class="log-success">SUCCESS</span>
+                    <span>Connected to 4,892 global consensus validators.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Developer / Creator Section -->
+    <section class="creator-section" id="developer">
+        <div class="glass-panel creator-card">
+            <div class="creator-title">Project Architect</div>
+            <div class="creator-name">Made with passion by <span style="color: var(--accent-secondary);">papri</span></div>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto;">
+                Connect with the creator for updates, developer logs, and ecosystem collaboration.
+            </p>
+            <div class="social-buttons">
+                <!-- X (Twitter) -->
+                <a href="https://x.com/Papri0248" target="_blank" class="social-btn x-btn">
+                    <i class="fa-brands fa-x-twitter"></i>
+                    <span>X: @Papri0248</span>
+                </a>
+                <!-- Discord -->
+                <a href="javascript:void(0)" onclick="copyDiscord()" class="social-btn discord-btn">
+                    <i class="fa-brands fa-discord"></i>
+                    <span>Discord: papri0248_07315</span>
+                    <span class="copy-tag">Click to Copy</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                © 2026 <span class="credit-highlight">ArcSync</span>. All rights reserved.
+            </div>
+            <div>
+                Crafted by <span class="credit-highlight">papri</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check" style="color: var(--accent-secondary);"></i>
+        <span id="toastMsg">Discord Tag Copied!</span>
+    </div>
+
+    <!-- Interactive Script -->
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 20) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Wallet Connection Simulation
+        let isConnected = false;
+        function toggleWallet() {
+            const walletText = document.getElementById('walletText');
+            if (!isConnected) {
+                walletText.innerText = '0x71C...4f9A';
+                showToast('Wallet Connected Successfully!');
+                isConnected = true;
+            } else {
+                walletText.innerText = 'Connect Wallet';
+                showToast('Wallet Disconnected');
+                isConnected = false;
+            }
+        }
+
+        // Copy Discord Tag
+        function copyDiscord() {
+            const discordTag = "papri0248_07315";
+            navigator.clipboard.writeText(discordTag);
+            showToast("Discord Tag Copied: " + discordTag);
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Terminal Log Animation Simulation
+        const terminalLog = document.getElementById('terminalLog');
+        const sampleLogs = [
+            { type: 'log-info', label: 'INFO', text: 'State sync verified for block #' + Math.floor(100000 + Math.random() * 900000) },
+            { type: 'log-success', label: 'SUCCESS', text: 'Consensus finalized in ' + (Math.random() * 0.8 + 0.4).toFixed(2) + 's' },
+            { type: 'log-info', label: 'INFO', text: 'Peer latency optimized across regional clusters' }
+        ];
+
+        setInterval(() => {
+            const randomLog = sampleLogs[Math.floor(Math.random() * sampleLogs.length)];
+            const timeStr = new Date().toLocaleTimeString();
+            const logElement = document.createElement('div');
+            logElement.className = 'log-line';
+            logElement.innerHTML = `
+                <span class="log-time">[${timeStr}]</span>
+                <span class="${randomLog.type}">${randomLog.label}</span>
+                <span>${randomLog.text}</span>
+            `;
+            terminalLog.appendChild(logElement);
+            if (terminalLog.children.length > 8) {
+                terminalLog.removeChild(terminalLog.children[0]);
+            }
+            terminalLog.scrollTop = terminalLog.scrollHeight;
+        }, 3500);
+    </script>
+</body>
+</html>
